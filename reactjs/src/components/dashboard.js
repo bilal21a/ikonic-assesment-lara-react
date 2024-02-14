@@ -1,38 +1,127 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 import AuthUser from './AuthUser';
 
 export default function Dashboard() {
-    const {http} = AuthUser();
-    const [userdetail,setUserdetail] = useState('');
+    const { http } = AuthUser();
+    const types = ['Backend', 'SQA', 'admin', 'developer'];
 
-    useEffect(()=>{
-        fetchUserDetail();
-    },[]);
+    // State variables for form data, validation errors, and submission status
+    const [formData, setFormData] = useState({
+        title: '',
+        category: '',
+        description: ''
+    });
+    const [errors, setErrors] = useState({});
+    const [submitting, setSubmitting] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
-    const fetchUserDetail = () =>{
-        http.post('/me').then((res)=>{
-            setUserdetail(res.data);
-        });
-    }
+    // Form validation function
+    const validateForm = () => {
+        let valid = true;
+        const newErrors = {};
 
-    function renderElement(){
-        if(userdetail){
-            return <div>
-                <h4>Name</h4>
-                <p>{userdetail.name}</p>
-                <h4>Email</h4>
-                <p>{userdetail.email}</p>
-            </div>
-        }else{
-            return <p>Loading.....</p>
+        if (!formData.title.trim()) {
+            newErrors.title = 'Title is required';
+            valid = false;
         }
 
-    }
+        if (!formData.category) {
+            newErrors.category = 'Category is required';
+            valid = false;
+        }
 
-    return(
+        if (!formData.description.trim()) {
+            newErrors.description = 'Description is required';
+            valid = false;
+        }
+
+        setErrors(newErrors);
+        return valid;
+    };
+
+    // Handle form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+
+        if (validateForm()) {
+            try {
+                await http.post('/feedback/save', formData);
+
+                // Clear form data after successful submission
+                setFormData({
+                    title: '',
+                    category: '',
+                    description: ''
+                });
+
+                // Show success message
+                setSuccessMessage('Feedback submitted successfully');
+            } catch (error) {
+                console.error('Error submitting form:', error);
+            } finally {
+                setSubmitting(false);
+            }
+        } else {
+            setSubmitting(false);
+        }
+    };
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.id]: e.target.value
+        });
+    };
+
+    return (
         <div>
-            <h1 className='mb-4 mt-4'>Dashboard page</h1>
-            { renderElement() }
+            <h1 className='mb-4 mt-4'>Feedback</h1>
+            {successMessage && <div className="alert alert-success">{successMessage}</div>}
+            <form onSubmit={handleSubmit}>
+                <div className="form-group mb-2">
+                    <label htmlFor="title">Title</label>
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        id="title" 
+                        placeholder="Enter title" 
+                        value={formData.title} 
+                        onChange={handleChange} 
+                    />
+                    {errors.title && <div className="text-danger">{errors.title}</div>}
+                </div>
+                <div className="form-group mb-2">
+                    <label htmlFor="category">Category</label>
+                    <select 
+                        className="form-control" 
+                        id="category" 
+                        value={formData.category} 
+                        onChange={handleChange}
+                    >
+                        <option value="" disabled>Select Types</option>
+                        {types.map((option, index) => (
+                            <option key={index} value={option}>{option}</option>
+                        ))}
+                    </select>
+                    {errors.category && <div className="text-danger">{errors.category}</div>}
+                </div>
+                <div className="form-group mb-2">
+                    <label htmlFor="description">Description</label>
+                    <textarea 
+                        className="form-control" 
+                        id="description" 
+                        rows="3"
+                        value={formData.description} 
+                        onChange={handleChange}
+                    ></textarea>
+                    {errors.description && <div className="text-danger">{errors.description}</div>}
+                </div>
+                <button type="submit" className="btn btn-primary" disabled={submitting}>
+                    {submitting ? 'Submitting...' : 'Submit'}
+                </button>
+            </form>
         </div>
     )
 }
