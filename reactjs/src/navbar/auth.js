@@ -3,6 +3,7 @@ import Home from '../components/home';
 import AddFeedback from '../components/feedback/AddFeedback';
 import AuthUser from '../components/AuthUser';
 import Feedback from '../components/feedback/Feedback';
+import EditFeedback from '../components/feedback/EditFeedback';
 function Auth() {
     const {token,logout} = AuthUser();
     const logoutUser = () => {
@@ -30,8 +31,9 @@ function Auth() {
             <div className="container">
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/addFeedback" element={<AddFeedback />} />
                     <Route path="/feedback" element={<Feedback />} />
+                    <Route path="/addFeedback" element={<AddFeedback />} />
+                    <Route path="/feedback/edit/:id" element={<EditFeedback />} />
                 </Routes>
             </div>
         </>
