@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\FeedBackController;
+use App\Http\Controllers\API\FeedBackController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,5 +28,5 @@ Route::group(['middleware'=>'api'],function(){
     Route::post('logout', [AuthController::class,'logout']);
     Route::post('refresh', [AuthController::class,'refresh']);
     Route::post('me', [AuthController::class,'me']);
-    Route::post('feedback/save', [FeedBackController::class,'store']);
+    Route::resource('feedback',FeedBackController::class);
 });

@@ -1,7 +1,8 @@
 import { Routes, Route, Link } from 'react-router-dom';
 import Home from '../components/home';
-import Dashboard from '../components/dashboard';
+import AddFeedback from '../components/feedback/AddFeedback';
 import AuthUser from '../components/AuthUser';
+import Feedback from '../components/feedback/Feedback';
 function Auth() {
     const {token,logout} = AuthUser();
     const logoutUser = () => {
@@ -29,7 +30,8 @@ function Auth() {
             <div className="container">
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/addFeedback" element={<AddFeedback />} />
+                    <Route path="/feedback" element={<Feedback />} />
                 </Routes>
             </div>
         </>
